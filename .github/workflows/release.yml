@@ -9,17 +9,46 @@ on:
     branches:
       - main
       - develop
-    paths:
-      - "/app"
-  pull_request:
-    branches:
-      - main
-      - develop
-    paths:
-      - "/app"
+      - master
+    # paths:
+    #   - "/app"
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - develop
+  #   paths:
+  #     - "/app"
 
 jobs:
-  build-and-push:
+  build-and-test:
+    runs-on: ubuntu-latest
+    environment:
+      name: booking-fe-env
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install Dependencies
+        run: npm ci
+        working-directory: ./app
+
+      - name: Build Application
+        run: npm run build
+        working-directory: ./app
+
+      # - name: Run Unit Tests
+      #   run: npm test
+
+      # - name: Run Integration Tests
+      #   run: npm run test:integration
+
+  push-to-ghcr:
     runs-on: ubuntu-latest
     environment:
       name: booking-fe-env
@@ -59,7 +88,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY}}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest
             type=semver,pattern={{steps.semantic_release.outputs.new_release}}
 
       - name: Build and push Docker image

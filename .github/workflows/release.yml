@@ -50,12 +50,19 @@ jobs:
 
   push-to-ghcr:
     runs-on: ubuntu-latest
-    environment:
-      name: booking-fe-env
+    # environment:
+    #   name: booking-fe-env
 
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
+
+      - name: Semantic Release
+        id: semantic_release
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOOKING_FE_TOKEN }}
+          DEBUG: "semantic-release:*"
 
       - name: Log into ${{ env.REGISTRY }}
         uses: docker/login-action@v3
@@ -64,17 +71,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Semantic Release
-        id: semantic_release
-        uses: cycjimmy/semantic-release-action@v4
-        env:
-          GH_TOKEN : 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
-          DEBUG: "semantic-release:*"
-          run: |
-          echo "Repository: ${{ github.repository }}"
-          echo "Environment: ${{ github.workflow }}"
-          echo "GH_TOKEN length: ${{ secrets.BOOKING_FE_TOKEN }}"  # Logs the token length to verify it's being set without exposing it.
-     
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

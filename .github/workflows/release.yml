@@ -93,6 +93,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY}}/${{ env.IMAGE_NAME }}
           tags: |
+            type=raw,value=latest
             type=semver,pattern={{steps.semantic_release.outputs.new_release_version}}
 
       - name: Build and push Docker image

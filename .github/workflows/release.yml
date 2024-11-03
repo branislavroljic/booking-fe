@@ -62,7 +62,10 @@ jobs:
 
       - name: Semantic Release
         id: semantic_release
-        uses: cycjimmy/semantic-release-action@v4 
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          # You can select another working directory like a subdirectory for example.
+          working_directory: ./app
         env:
           GH_TOKEN: ${{ secrets.BOOKING_FE_TOKEN }}
           DEBUG: "semantic-release:*"

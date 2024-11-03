@@ -62,7 +62,7 @@ jobs:
 
       - name: Semantic Release
         id: semantic_release
-        uses: cycjimmy/semantic-release-action@v4
+        uses: cycjimmy/semantic-release-action@v4 
         env:
           GH_TOKEN: ${{ secrets.BOOKING_FE_TOKEN }}
           DEBUG: "semantic-release:*"

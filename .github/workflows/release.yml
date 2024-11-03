@@ -68,9 +68,12 @@ jobs:
         id: semantic_release
         uses: cycjimmy/semantic-release-action@v4
         env:
-          GITHUB_TOKEN: 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
+          GH_TOKEN : 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
           DEBUG: "semantic-release:*"
-
+          run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Environment: ${{ github.workflow }}"
+          echo "GH_TOKEN length: ${{ secrets.BOOKING_FE_TOKEN }}"  # Logs the token length to verify it's being set without exposing it.
      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

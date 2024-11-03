@@ -22,8 +22,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    environment:
-      name: booking-fe-env
 
     steps:
       - name: Checkout Repository
@@ -50,20 +48,18 @@ jobs:
 
   push-to-ghcr:
     runs-on: ubuntu-latest
-    # environment:
-    #   name: booking-fe-env
+    environment:
+      name: booking-fe-env
 
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
-        with:
-          persist-credentials: false
 
       - name: Semantic Release
         id: semantic_release
         uses: cycjimmy/semantic-release-action@v4
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.BOOKING_FE_TOKEN }}
           DEBUG: "semantic-release:*"
 
       - name: Log into ${{ env.REGISTRY }}

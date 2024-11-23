@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookingclient-svc
+  labels:
+    app: bookingclient
+spec:
+  type: NodePort
+  ports:
+    - port: 5173 # Port on the service
+      protocol: TCP
+      nodePort: 30080
+  selector:
+    app: bookingclient
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookingclient
+  namespace: booking
+  labels:
+    app: bookingclient
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookingclient
+  template:
+    metadata:
+      labels:
+        app: bookingclient
+    spec:
+      containers:
+        - name: bookingclient
+          image: ghcr.io/branislavroljic/booking-fe/app:latest # Replace with your production image
+          ports:
+            - containerPort: 5173 # Port exposed by the container
+      imagePullSecrets:
+        - name: github-container-registry

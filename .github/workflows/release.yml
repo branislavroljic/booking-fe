@@ -52,13 +52,13 @@ jobs:
   push-to-ghcr:
     runs-on: ubuntu-latest
     environment:
-      name: booking-fe-env 
+      name: booking-fe-env
 
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Semantic Release
         id: semantic_release
@@ -96,18 +96,27 @@ jobs:
             type=raw,value=latest
             type=semver,pattern={{steps.semantic_release.outputs.new_release_version}}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
+      - uses: int128/kaniko-action@v1
         with:
           context: ./app
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          labels: ${{ steps.metadata.outputs.labels }}
+          cache: true
+          cache-repository: ghcr.io/${{ github.repository }}/cache
+          
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     context: ./app
+      #     push: true
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     cache-from: type=local,src=/tmp/.buildx-cache
+      #     cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
-      # Temp fix for caching issue
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      # # Temp fix for caching issue
+      # - name: Move cache
+      #   run: |
+      #     rm -rf /tmp/.buildx-cache
+      #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache

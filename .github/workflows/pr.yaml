@@ -1,0 +1,49 @@
+name: booking-fe merge workflow
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/app
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Get npm cache directory path
+        id: npm-cache-dir-path
+        working-directory: ./app
+        run: echo "::set-output name=dir::$(npm config get cache)"
+
+      - uses: actions/cache@v3
+        id: npm-cache # use this to check for cache-hit (steps.npm-cache.outputs.cache-hit != 'true')
+        with:
+          path: ${{ steps.npm-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Install Dependencies
+        working-directory: ./app
+        run: npm ci
+
+      - name: Build Application
+        working-directory: ./app
+        run: npm run build

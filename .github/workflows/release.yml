@@ -63,6 +63,9 @@ jobs:
       - name: Semantic Release
         id: semantic_release
         uses: cycjimmy/semantic-release-action@v4
+        with:
+          working_directory: ./app
+
         env:
           GH_TOKEN: ${{ secrets.BOOKING_FE_TOKEN }}
           DEBUG: "semantic-release:*"
@@ -72,7 +75,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.BOOKING_FE_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -91,20 +94,30 @@ jobs:
         with:
           images: ${{ env.REGISTRY}}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{steps.semantic_release.outputs.new_release}}
+            type=raw,value=latest
+            type=semver,pattern={{steps.semantic_release.outputs.new_release_version}}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
+      - uses: int128/kaniko-action@v1
         with:
           context: ./app
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          labels: ${{ steps.metadata.outputs.labels }}
+          cache: true
+          cache-repository: ghcr.io/${{ github.repository }}/cache
+          
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     context: ./app
+      #     push: true
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     cache-from: type=local,src=/tmp/.buildx-cache
+      #     cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
-      # Temp fix for caching issue
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      # # Temp fix for caching issue
+      # - name: Move cache
+      #   run: |
+      #     rm -rf /tmp/.buildx-cache
+      #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache

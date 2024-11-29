@@ -1,13 +1,17 @@
-FROM node:20-slim AS base
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json .
+COPY package.json .
 
 RUN npm install
 
+RUN npm i -g serve
+
 COPY . .
 
-EXPOSE 5173
+RUN npm run build
 
-CMD ["npm", "run", "dev"]
+EXPOSE 3000
+
+CMD [ "serve", "-s", "dist" ]

@@ -65,6 +65,11 @@ jobs:
         uses: cycjimmy/semantic-release-action@v4
         with:
           working_directory: ./app
+          branches: |
+                  [
+                    'main',
+                    'develop'
+                  ]
         env:
           GH_TOKEN: ${{ secrets.BOOKING_FE_TOKEN }}
           DEBUG: "semantic-release:*"

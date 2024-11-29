@@ -10,8 +10,6 @@ on:
       - main
       - develop
       - master
-    paths:
-      - "/app"
 
 permissions:
   contents: write

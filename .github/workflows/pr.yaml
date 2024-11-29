@@ -29,7 +29,7 @@ jobs:
 
       - name: Get npm cache directory path
         id: npm-cache-dir-path
-        working-directory: nextjs-minikube-integration
+        working-directory: ./app
         run: echo "::set-output name=dir::$(npm config get cache)"
 
       - uses: actions/cache@v3
@@ -41,9 +41,9 @@ jobs:
             ${{ runner.os }}-npm-
 
       - name: Install Dependencies
-        run: npm ci
         working-directory: ./app
+        run: npm ci
 
       - name: Build Application
-        run: npm run build
         working-directory: ./app
+        run: npm run build
